@@ -29,7 +29,7 @@ namespace PersonalFinances.Financial.Application.Commands
 
                 var model = request.InputModel;
 
-                entity.Update(model.Summary, model.Description, model.Price, model.DueDate, model.StartDate, model.EndDate, model.CategoryId);
+                entity.Update(model.Summary, model.Description, model.Price, model.DueDay, model.StartDate, model.EndDate, model.CategoryId);
 
                 await _service.UpdateAsync(entity);
 

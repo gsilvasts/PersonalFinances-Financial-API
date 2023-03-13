@@ -1,13 +1,18 @@
-﻿using PersonalFinances.Financial.Domain.Entities;
+﻿using MongoDB.Driver;
+using PersonalFinances.Financial.Domain.Entities;
 using PersonalFinances.Financial.Domain.Interfaces.Repositories;
 
 namespace PersonalFinances.Financial.Infrastructure.Persistence.Repositories
 {
     public class ExpenseRepository : Repository<Expense>, IExpenseRepository
     {
-        public Task GetExpensePaymentAsync(Guid userId, int month, int year)
+        public ExpenseRepository(IMongoDatabase mongoDataBase) : base(mongoDataBase)
         {
-            throw new NotImplementedException();
+            
+        }
+        public async Task<List<Expense>> GetExpensePaymentAsync(Guid userId, int month, int year)
+        {
+            return await _collection.FindAsync(Builders<Expense>.Filter.Where(x => x.UserId.Equals(userId))).Result.ToListAsync();
         }
         public Task AddPaymentAsync(Payment payment)
         {

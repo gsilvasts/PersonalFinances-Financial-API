@@ -1,4 +1,5 @@
 ﻿using PersonalFinances.Financial.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace PersonalFinances.Financial.Domain.Interfaces.Repositories
 {
@@ -6,9 +7,9 @@ namespace PersonalFinances.Financial.Domain.Interfaces.Repositories
     {
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(long id);
-        Task<IEnumerable<T>> GetByQueryAsync(Func<T, object> func);
-        Task<T> CreateAsync(T entity);
+        Task<IEnumerable<T>> GetByQueryAsync(Expression<Func<T, bool>> func);
+        Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
-        Task TaskDeleteAsync(long id);
+        Task DeleteAsync(long id);
     }
 }

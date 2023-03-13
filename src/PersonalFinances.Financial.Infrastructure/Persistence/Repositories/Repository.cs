@@ -1,18 +1,20 @@
-﻿using PersonalFinances.Financial.Domain.Entities;
+﻿using MongoDB.Driver;
+using PersonalFinances.Financial.Domain.Entities;
 using PersonalFinances.Financial.Domain.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace PersonalFinances.Financial.Infrastructure.Persistence.Repositories
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        public Task<T> CreateAsync(T entity)
+        protected readonly IMongoCollection<T> _collection;
+        public Repository(IMongoDatabase mongoDataBase)
         {
-            throw new NotImplementedException();
+            _collection = mongoDataBase.GetCollection<T>(typeof(T).Name);
+        }
+        public async Task CreateAsync(T entity)
+        {
+            await _collection.InsertOneAsync(entity);
         }
 
         public void Dispose()
@@ -20,29 +22,29 @@ namespace PersonalFinances.Financial.Infrastructure.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _collection.FindAsync(Builders<T>.Filter.Empty).Result.ToListAsync();
         }
 
-        public Task<T> GetByIdAsync(long id)
+        public async Task<T> GetByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            return await _collection.FindAsync(x=>x.Id.Equals(id)).Result.FirstOrDefaultAsync();
         }
 
-        public Task<IEnumerable<T>> GetByQueryAsync(Func<T, object> func)
+        public async Task<IEnumerable<T>> GetByQueryAsync(Expression<Func<T, bool>> func)
         {
-            throw new NotImplementedException();
+            return await _collection.FindAsync(Builders<T>.Filter.Where(func)).Result.ToListAsync();            
         }
 
-        public Task TaskDeleteAsync(long id)
+        public async Task DeleteAsync(long id)
         {
-            throw new NotImplementedException();
+            await _collection.DeleteOneAsync(x=>x.Id.Equals(id));
         }
 
-        public Task UpdateAsync(T entity)
+        public async Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            await _collection.ReplaceOneAsync(x=>x.Id.Equals(entity.Id), entity);
         }
     }
 }

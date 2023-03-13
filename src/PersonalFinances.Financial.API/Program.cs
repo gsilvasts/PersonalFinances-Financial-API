@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PersonalFinances.Financial.Application.Commands;
 using PersonalFinances.Financial.Application.Mappings;
+using PersonalFinances.Financial.Domain;
 using PersonalFinances.Financial.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddRepositories();
+builder.Services
+    .AddServices()
+    .AddMongo()
+    .AddRepositories();
 builder.Services.AddAutoMapper(typeof(InputModelToEntityModelProfile));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddExpenseCommand).Assembly));
